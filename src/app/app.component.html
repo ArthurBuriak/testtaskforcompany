@@ -1,0 +1,429 @@
+<div class="inforce">
+  <div class="container">
+    <div class="inforce-buttons">
+      <ng-template #content let-modal>
+        <div class="modal-header">
+          <h4 class="modal-title" id="modal-basic-title">Add product</h4>
+          <button
+            type="button"
+            class="close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="formProduct">
+            <div class="form-group">
+              <label for="exampleFormControlFile1">Add image</label>
+              <input
+                type="file"
+                class="form-control-file"
+                id="exampleFormControlFile1"
+                (change)="imageUpload($event)"
+                name="file"
+              />
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Name product</label>
+              <input
+                type="email"
+                class="form-control"
+                id="exampleInputEmail1"
+                aria-describedby="emailHelp"
+                placeholder="Enter email"
+                formControlName="name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Count product</label>
+              <input
+                type="text"
+                class="form-control"
+                id="exampleInputPassword1"
+                placeholder="Count product"
+                formControlName="count"
+              />
+            </div>
+            <div class="sizes" formGroupName="size">
+              <div class="form-group">
+                <label for="exampleInputPassword1">Width product</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="exampleInputPassword1"
+                  placeholder="Password"
+                  formControlName="width"
+                />
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Height product</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="exampleInputPassword1"
+                  placeholder="Password"
+                  formControlName="height"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Weight product</label>
+              <input
+                type="text"
+                class="form-control"
+                id="exampleInputPassword1"
+                placeholder="Password"
+                formControlName="weight"
+              />
+            </div>
+            <div
+              class="form-group"
+              formArrayName="comments"
+              *ngFor="let item of productComments.controls; let i = index"
+            >
+              <label for="exampleFormControlTextarea1">Example textarea</label>
+              <div [formGroupName]="i">
+                <textarea
+                  class="form-control"
+                  id="exampleFormControlTextarea1"
+                  rows="3"
+                  placeholder="Enter your comment"
+                  formControlName="description"
+                ></textarea>
+                <div class="form-group">
+                  <div class="input-group">
+                    <input
+                      class="form-control"
+                      placeholder="yyyy-mm-dd"
+                      name="dp"
+                      [(ngModel)]="model"
+                      ngbDatepicker
+                      #d="ngbDatepicker"
+                      formControlName="date"
+                    />
+                    <div class="input-group-append">
+                      <button
+                        class="btn btn-outline-secondary calendar"
+                        (click)="d.toggle()"
+                        type="button"
+                      >
+                        Pick a date
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              (click)="addProduct()"
+              type="submit"
+              class="btn btn-primary"
+            >
+              Add
+            </button>
+            <div class="valid-form" *ngIf="isVaid">Please fill all fields</div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            (click)="modal.close('Save click')"
+          >
+            Save
+          </button>
+        </div>
+      </ng-template>
+
+      <button class="btn btn-primary" (click)="open(content)">
+        Products List View
+      </button>
+     
+      <div class="sort">
+        <select (change)="sortBy($event)" class="browser-default custom-select">
+          <option value="noselect" selected>Sort By</option>
+          <option value="id">ID</option>
+          <option value="name">Name</option>
+        </select>
+      </div>
+    </div>
+    <div class="inforce-show-products d-flex flex-wrap justify-content-between">
+      <div
+        class="card"
+        *ngFor="let card of getAllProducts | sort: sort"
+        style="width: 18rem"
+      >
+        <img
+          class="card-img-top"
+          style="width: 100%; height: 300px"
+          [src]="card.imageUrl"
+          alt="Card image cap"
+        />
+        <div class="card-body">
+          <h5 class="card-title">{{ card.name }}</h5>
+          <div class="card-description">Count: {{ card.count }}</div>
+          <div class="card-sizes">Weight: {{ card.weight }}</div>
+          <ng-template #content3 let-modal>
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">
+                Information about product
+              </h4>
+              <button
+                type="button"
+                class="close"
+                aria-label="Close"
+                (click)="modal.dismiss('Cross click')"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="product">
+                <div class="product-image">
+                  <img width="100%" [src]="getProductById.imageUrl" alt="" />
+                </div>
+                <div class="product-name">
+                  <h1>{{ getProductById.name }}</h1>
+                </div>
+                <div class="product-count">
+                  <p>Count: {{ getProductById.count }}</p>
+                </div>
+                <div class="product-sizes">
+                  <p>Width: {{ getProductById.size.width }}</p>
+                  <p>Height: {{ getProductById.size.height }}</p>
+                </div>
+                <div class="product-weight">
+                  <p>Weight: {{ getProductById.weight }}</p>
+                </div>
+                <div
+                  *ngFor="let item of getProductById.comments"
+                  class="product-comment"
+                >
+                  Comments:
+                  <p>
+                    {{ item.description }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="modal.close('Save click')"
+              >
+                Close
+              </button>
+              <ng-template #content4 let-modal>
+                <div class="modal-header">
+                  <h4 class="modal-title" id="modal-basic-title">
+                    Update Information
+                  </h4>
+                  <button
+                    type="button"
+                    class="close"
+                    aria-label="Close"
+                    (click)="modal.dismiss('Cross click')"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form [formGroup]="formUpdateProduct">
+                    <div class="form-group">
+                      <label for="exampleFormControlFile1">Add image</label>
+                      <input
+                        type="file"
+                        class="form-control-file"
+                        id="exampleFormControlFile1"
+                        (change)="imageUpdateUpload($event)"
+                        name="file"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Name product</label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Enter email"
+                        formControlName="name"
+                        [(ngModel)]="getProductById.name"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputPassword1">Count product</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="exampleInputPassword1"
+                        placeholder="Count product"
+                        formControlName="count"
+                        [(ngModel)]="getProductById.count"
+                      />
+                    </div>
+                    <div class="sizes" formGroupName="size">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Width product</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="exampleInputPassword1"
+                          placeholder="Password"
+                          formControlName="width"
+                          [(ngModel)]="getProductById.size.width"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputPassword1"
+                          >Height product</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="exampleInputPassword1"
+                          placeholder="Password"
+                          formControlName="height"
+                          [(ngModel)]="getProductById.size.height"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputPassword1">Weight product</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="exampleInputPassword1"
+                        placeholder="Password"
+                        formControlName="weight"
+                        [(ngModel)]="getProductById.weight"
+                      />
+                    </div>
+                    <div class="form-group" formGroupName="comments">
+                      <label for="exampleFormControlTextarea1"
+                        >Example textarea</label
+                      >
+                      <div>
+                        <textarea
+                          *ngFor="let item of getProductById.comments"
+                          class="form-control"
+                          id="exampleFormControlTextarea1"
+                          rows="3"
+                          placeholder="Enter your comment"
+                          formControlName="description"
+                          [(ngModel)]="item.description"
+                        ></textarea>
+                      </div>
+                      <div class="form-group">
+                        <div class="input-group">
+                          <input
+                            class="form-control"
+                            placeholder="yyyy-mm-dd"
+                            name="dp"
+                            [(ngModel)]="model"
+                            ngbDatepicker
+                            #d="ngbDatepicker"
+                            formControlName="date"
+                          />
+                          <div class="input-group-append">
+                            <button
+                              class="btn btn-outline-secondary calendar"
+                              (click)="d.toggle()"
+                              type="button"
+                            >
+                              Pick a date
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      (click)="updateProduct(card.id)"
+                      type="submit"
+                      class="btn btn-primary"
+                    >
+                      Update
+                    </button>
+                    <div class="valid-form" *ngIf="isUploadValid">
+                      Please fill all fields
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="deleteProduct(card.id)"
+                    (click)="modal.close('Save click')"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    (click)="modal.close('Save click')"
+                    class="btn btn-warning"
+                  >
+                    No
+                  </button>
+                </div>
+              </ng-template>
+
+              <button class="btn btn-warning" (click)="open(content4)">
+                Update
+              </button>
+            </div>
+          </ng-template>
+
+          <button
+            class="btn btn-primary"
+            (click)="showMore(card.id)"
+            (click)="open(content3)"
+          >
+            Show more
+          </button>
+          <!-- <button type="button" href="#" class="btn btn-primary">
+            Show more
+          </button> -->
+          <ng-template #content2 let-modal>
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">Are you sure ?</h4>
+              <button
+                type="button"
+                class="close"
+                aria-label="Close"
+                (click)="modal.dismiss('Cross click')"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>If you click "Yes" this product will be delete</p>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-danger"
+                (click)="deleteProduct(card.id)"
+                (click)="modal.close('Save click')"
+              >
+                Yes
+              </button>
+              <button
+                (click)="modal.close('Save click')"
+                class="btn btn-warning"
+              >
+                No
+              </button>
+            </div>
+          </ng-template>
+
+          <button class="btn btn-danger" (click)="open(content2)">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
